@@ -1,5 +1,4 @@
 import createHttpError from 'http-errors';
-
 import {
   getAllContacts,
   getContactById,
@@ -7,12 +6,12 @@ import {
   updateContact,
   deleteContact,
 } from '../services/contacts.js';
-
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
-
 import { parseSortParams } from '../utils/parseSortParams.js';
-
 import { parseFilterParams } from '../utils/parseFilterParams.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { env } from '../utils/env.js';
 
 export const getContactsController = async (req, res, next) => {
   try {
@@ -59,7 +58,16 @@ export const getContactByIdController = async (req, res, next) => {
 export const createContactController = async (req, res, next) => {
   try {
     const { _id: userId } = req.user;
-    const payload = { ...req.body, userId };
+    const photo = req.file;
+    let photoUrl;
+    if (photo) {
+      if (env('ENABLE_CLOUDINARY') === 'true') {
+        photoUrl = await saveFileToCloudinary(photo);
+      } else {
+        photoUrl = await saveFileToUploadDir(photo);
+      }
+    }
+    const payload = { ...req.body, userId, photo: photoUrl };
     const contact = await createContact(payload);
 
     res.status(201).json({
@@ -73,25 +81,45 @@ export const createContactController = async (req, res, next) => {
 };
 
 export const patchContactController = async (req, res, next) => {
-  const { _id: userId } = req.user;
-  const { contactId } = req.params;
-  const result = await updateContact({ _id: contactId, userId }, req.body);
+  try {
+    const { _id: userId } = req.user;
+    const { contactId } = req.params;
 
-  if (!result) {
-    next(
-      createHttpError(
-        404,
-        `Contact ${contactId} not found or you do not have permission to update it`,
-      ),
-    );
-    return;
+    const photo = req.file;
+    let photoUrl;
+    if (photo) {
+      if (env('ENABLE_CLOUDINARY') === 'true') {
+        photoUrl = await saveFileToCloudinary(photo);
+      } else {
+        photoUrl = await saveFileToUploadDir(photo);
+      }
+    }
+
+    const updatePayload = { ...req.body };
+    if (photoUrl) {
+      updatePayload.photo = photoUrl;
+    }
+
+    const result = await updateContact(contactId, userId, updatePayload);
+
+    if (!result) {
+      next(
+        createHttpError(
+          404,
+          `Contact ${contactId} not found or you do not have permission to update it`,
+        ),
+      );
+      return;
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: `Successfully updated a contact!`,
+      data: result.contact,
+    });
+  } catch (error) {
+    next(error);
   }
-
-  res.status(200).json({
-    status: 200,
-    message: `Successfully updated a contact!`,
-    data: result.contact,
-  });
 };
 
 export const deleteСontactController = async (req, res, next) => {

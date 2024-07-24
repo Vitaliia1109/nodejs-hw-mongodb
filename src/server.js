@@ -6,6 +6,7 @@ import router from './routers/index.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import cookieParser from 'cookie-parser';
+import { UPLOAD_DIR } from './constants/pictures-constants.js';
 
 const PORT = Number(env('PORT', '3000'));
 
@@ -18,6 +19,8 @@ export const setupServer = () => {
       limit: '100kb',
     }),
   );
+
+  app.use('/uploads', express.static(UPLOAD_DIR));
 
   app.use(cors());
 
