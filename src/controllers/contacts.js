@@ -126,7 +126,7 @@ export const deleteСontactController = async (req, res, next) => {
   const { contactId } = req.params;
   const { _id: userId } = req.user;
 
-  const contact = await deleteContact({ _id: contactId, userId });
+  const contact = await deleteContact(contactId, userId);
 
   if (!contact) {
     next(

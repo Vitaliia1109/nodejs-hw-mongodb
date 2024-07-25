@@ -12,7 +12,7 @@ import {
 } from '../constants/session-constants.js';
 import { UsersCollection } from '../db/models/user.js';
 import { SessionsCollection } from '../db/models/session.js';
-import { SMTP, TEMPLATES_DIR } from '../constants/smtp-constats.js';
+import { SMTP, TEMPLATES_DIR } from '../constants/smtp-constants.js';
 import { env } from '../utils/env.js';
 import { sendEmail } from '../utils/sendMail.js';
 
