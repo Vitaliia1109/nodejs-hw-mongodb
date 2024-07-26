@@ -197,6 +197,11 @@
                     "description": "Whether is contact favourite",
                     "type": "boolean",
                     "example": false
+                  },
+                  "photo": {
+                    "description": "Link to contact's photo",
+                    "type": "string",
+                    "example": "https://res.cloudinary.com/qwerty/image/upload/image.jpg"
                   }
                 }
               }
@@ -309,6 +314,48 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "Contact's name",
+                    "type": "string",
+                    "example": "John Smith"
+                  },
+                  "phoneNumber": {
+                    "description": "Contact's phoneNumber",
+                    "type": "string",
+                    "example": "+380501234567"
+                  },
+                  "email": {
+                    "description": "Contact's email",
+                    "type": "string",
+                    "example": "john.smith@gmail.com"
+                  },
+                  "contactType": {
+                    "description": "Contact's type",
+                    "type": "string",
+                    "enum": ["work", "home", "personal"],
+                    "example": "work"
+                  },
+                  "isFavourite": {
+                    "description": "Is this contact favourite?",
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "photo": {
+                    "description": "Link to contact's photo",
+                    "type": "string",
+                    "example": "https://res.cloudinary.com/qwerty/image/upload/image.jpg"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Update contact by id",

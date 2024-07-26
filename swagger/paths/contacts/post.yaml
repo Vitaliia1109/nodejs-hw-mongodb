@@ -36,7 +36,11 @@ requestBody:
             description: 'Whether is contact favourite'
             type: boolean
             example: false
-        responses:
+          photo:
+            description: "Link to contact's photo"
+            type: string
+            example: 'https://res.cloudinary.com/qwerty/image/upload/image.jpg'
+responses:
   '201':
     description: Creates a contact
     content:
